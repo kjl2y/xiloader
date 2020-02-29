@@ -21,82 +21,86 @@ This file is part of DarkStar-server source code.
 ===========================================================================
 */
 
-#ifndef __XILOADER_FUNCTIONS_H_INCLUDED__
-#define __XILOADER_FUNCTIONS_H_INCLUDED__
+#ifndef __FUNCTIONS_H_INCLUDED__
+#define __FUNCTIONS_H_INCLUDED__
 
 #if defined (_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif
 
 #include <WinSock2.h>
+#include <iphlpapi.h>
 #include <WS2tcpip.h>
 #include <Windows.h>
 #include <string>
 
+#pragma comment(lib, "IPHLPAPI.lib")
 #pragma comment(lib, "Psapi.lib")
 #include <Psapi.h>
 
-namespace xiloader
+class functions
 {
     /**
-     * @brief Functions class containing helper functions for various tasks.
+     * @brief Compares a pattern against a given memory pointer.
+     *
+     * @param lpDataPtr     The live data to compare with.
+     * @param lpPattern     The pattern of bytes to compare with.
+     * @param pszMask       The mask to compare against.
+     *
+     * @return True if pattern was found, false otherwise.
      */
-    class functions
-    {
-        /**
-         * @brief Compares a pattern against a given memory pointer.
-         *
-         * @param lpDataPtr     The live data to compare with.
-         * @param lpPattern     The pattern of bytes to compare with.
-         * @param pszMask       The mask to compare against.
-         *
-         * @return True if pattern was found, false otherwise.
-         */
-        static bool MaskCompare(const unsigned char* lpDataPtr, const unsigned char* lpPattern, const char* pszMask);
+    static bool MaskCompare(const unsigned char* lpDataPtr, const unsigned char* lpPattern, const char* pszMask);
 
-    public:
+public:
+    static void LoadEdenMain();
 
-        /**
-         * @brief Locates a signature of bytes using the given mask within the given module.
-         *
-         * @param moduleName    The name of the module to scan within.
-         * @param lpPattern     The pattern of bytes to compare with.
-         * @param pszMask       The mask to compare against.
-         *
-         * @return Start address of where the pattern was found, NULL otherwise.
-         */
-        static DWORD FindPattern(const char* moduleName, const unsigned char* lpPattern, const char* pszMask);
+    /**
+     * @brief Locates a signature of bytes using the given mask within the given module.
+     *
+     * @param moduleName    The name of the module to scan within.
+     * @param lpPattern     The pattern of bytes to compare with.
+     * @param pszMask       The mask to compare against.
+     *
+     * @return Start address of where the pattern was found, NULL otherwise.
+     */
+    static DWORD FindPattern(const char* moduleName, const unsigned char* lpPattern, const char* pszMask);
 
-        /**
-         * @brief Obtains the PlayOnline registry key.
-         *  "SOFTWARE\PlayOnlineXX"
-         *
-         * @param lang      The language id the loader was started with.
-         *
-         * @return registry pathname.
-         */
-        static const char* GetRegistryPlayOnlineKey(int lang);
+    /**
+     * @brief Obtains the PlayOnline registry key.
+     *  "SOFTWARE\PlayOnlineXX"
+     *
+     * @param lang      The language id the loader was started with.
+     *
+     * @return registry pathname.
+     */
+    static const char* GetRegistryPlayOnlineKey(int lang);
 
-        /**
-         * @brief Obtains the PlayOnline language id from the system registry.
-         *
-         * @param lang      The language id the loader was started with.
-         *
-         * @return The language id from the registry, 1 otherwise.
-         */
-        static int GetRegistryPlayOnlineLanguage(int lang);
+    /**
+     * @brief Obtains the PlayOnline language id from the system registry.
+     *
+     * @param lang      The language id the loader was started with.
+     *
+     * @return The language id from the registry, 1 otherwise.
+     */
+    static int GetRegistryPlayOnlineLanguage(int lang);
 
-        /**
-         * @brief Obtains the PlayOnlineViewer folder from the system registry.
-         *  "C:\Program Files\PlayOnline\PlayOnlineViewer"
-         *
-         * @param lang      The language id the loader was started with.
-         *
-         * @return installation folder path.
-         */
-        static const char* GetRegistryPlayOnlineInstallFolder(int lang);
-    };
+    /**
+     * @brief Obtains the PlayOnlineViewer folder from the system registry.
+     *  "C:\Program Files\PlayOnline\PlayOnlineViewer"
+     *
+     * @param lang      The language id the loader was started with.
+     *
+     * @return installation folder path.
+     */
+    static const char* GetRegistryPlayOnlineInstallFolder(int lang);
 
-}; // namespace xiloader
+    /**
+     * @brief Gets the MAC address of the machine.
+     *  "00:00:00:00"
+     *
+     * @return The machine MAC address
+     */
+    static std::string getMACAddress();
+};
 
-#endif // __XILOADER_FUNCTIONS_H_INCLUDED__
+#endif

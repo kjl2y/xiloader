@@ -6,15 +6,15 @@
  /* File created by MIDL compiler version 8.00.0603 */
 /* at Tue Jan 28 21:15:45 2014
  */
-/* Compiler settings for ffxi.idl:
-    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
-    protocol : dce , ms_ext, c_ext, robust
-    error checks: allocation ref bounds_check enum stub_data 
-    VC __declspec() decoration level: 
-         __declspec(uuid()), __declspec(selectany), __declspec(novtable)
-         DECLSPEC_UUID(), MIDL_INTERFACE()
-*/
-/* @@MIDL_FILE_HEADING(  ) */
+ /* Compiler settings for ffxi.idl:
+     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603
+     protocol : dce , ms_ext, c_ext, robust
+     error checks: allocation ref bounds_check enum stub_data
+     VC __declspec() decoration level:
+          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
+          DECLSPEC_UUID(), MIDL_INTERFACE()
+ */
+ /* @@MIDL_FILE_HEADING(  ) */
 
 #pragma warning( disable: 4049 )  /* more than 64k source lines */
 
@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-/* Forward Declarations */ 
+/* Forward Declarations */
 
 #ifndef ___IFFXiEntryEvents_FWD_DEFINED__
 #define ___IFFXiEntryEvents_FWD_DEFINED__
@@ -87,7 +87,7 @@ typedef struct FxFileManager FxFileManager;
 
 
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif 
 
 
@@ -95,101 +95,101 @@ extern "C"{
 #ifndef __FFXILib_LIBRARY_DEFINED__
 #define __FFXILib_LIBRARY_DEFINED__
 
-/* library FFXILib */
-/* [custom][custom][helpstring][version][uuid] */ 
+    /* library FFXILib */
+    /* [custom][custom][helpstring][version][uuid] */
 
 
 
 
-typedef struct tag_FX_FILE_DATA
+    typedef struct tag_FX_FILE_DATA
     {
-    unsigned short FileNo;
-    unsigned char *pBufAddr;
+        unsigned short FileNo;
+        unsigned char* pBufAddr;
     } 	_FX_FILE_DATA;
 
 
-EXTERN_C const IID LIBID_FFXILib;
+    EXTERN_C const IID LIBID_FFXILib;
 
 #ifndef ___IFFXiEntryEvents_DISPINTERFACE_DEFINED__
 #define ___IFFXiEntryEvents_DISPINTERFACE_DEFINED__
 
-/* dispinterface _IFFXiEntryEvents */
-/* [helpstring][uuid] */ 
+    /* dispinterface _IFFXiEntryEvents */
+    /* [helpstring][uuid] */
 
 
-EXTERN_C const IID DIID__IFFXiEntryEvents;
+    EXTERN_C const IID DIID__IFFXiEntryEvents;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
 
     MIDL_INTERFACE("989D790E-6236-11D4-80E9-00105A81E890")
-    _IFFXiEntryEvents : public IDispatch
+        _IFFXiEntryEvents : public IDispatch
     {
     };
-    
+
 #else 	/* C style interface */
 
     typedef struct _IFFXiEntryEventsVtbl
     {
         BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            _IFFXiEntryEvents * This,
-            /* [in] */ REFIID riid,
-            /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            _IFFXiEntryEvents * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            _IFFXiEntryEvents * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
-            _IFFXiEntryEvents * This,
-            /* [out] */ UINT *pctinfo);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
-            _IFFXiEntryEvents * This,
+
+            HRESULT(STDMETHODCALLTYPE* QueryInterface)(
+                _IFFXiEntryEvents* This,
+                /* [in] */ REFIID riid,
+                /* [annotation][iid_is][out] */
+                _COM_Outptr_  void** ppvObject);
+
+        ULONG(STDMETHODCALLTYPE* AddRef)(
+            _IFFXiEntryEvents* This);
+
+        ULONG(STDMETHODCALLTYPE* Release)(
+            _IFFXiEntryEvents* This);
+
+        HRESULT(STDMETHODCALLTYPE* GetTypeInfoCount)(
+            _IFFXiEntryEvents* This,
+            /* [out] */ UINT* pctinfo);
+
+        HRESULT(STDMETHODCALLTYPE* GetTypeInfo)(
+            _IFFXiEntryEvents* This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
-            /* [out] */ ITypeInfo **ppTInfo);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
-            _IFFXiEntryEvents * This,
+            /* [out] */ ITypeInfo** ppTInfo);
+
+        HRESULT(STDMETHODCALLTYPE* GetIDsOfNames)(
+            _IFFXiEntryEvents* This,
             /* [in] */ REFIID riid,
-            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [size_is][in] */ LPOLESTR* rgszNames,
             /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
-            /* [size_is][out] */ DISPID *rgDispId);
-        
-        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
-            _IFFXiEntryEvents * This,
-            /* [annotation][in] */ 
+            /* [size_is][out] */ DISPID* rgDispId);
+
+        /* [local] */ HRESULT(STDMETHODCALLTYPE* Invoke)(
+            _IFFXiEntryEvents* This,
+            /* [annotation][in] */
             _In_  DISPID dispIdMember,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  REFIID riid,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  LCID lcid,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  WORD wFlags,
-            /* [annotation][out][in] */ 
-            _In_  DISPPARAMS *pDispParams,
-            /* [annotation][out] */ 
-            _Out_opt_  VARIANT *pVarResult,
-            /* [annotation][out] */ 
-            _Out_opt_  EXCEPINFO *pExcepInfo,
-            /* [annotation][out] */ 
-            _Out_opt_  UINT *puArgErr);
-        
+            /* [annotation][out][in] */
+            _In_  DISPPARAMS* pDispParams,
+            /* [annotation][out] */
+            _Out_opt_  VARIANT* pVarResult,
+            /* [annotation][out] */
+            _Out_opt_  EXCEPINFO* pExcepInfo,
+            /* [annotation][out] */
+            _Out_opt_  UINT* puArgErr);
+
         END_INTERFACE
     } _IFFXiEntryEventsVtbl;
 
     interface _IFFXiEntryEvents
     {
-        CONST_VTBL struct _IFFXiEntryEventsVtbl *lpVtbl;
+        CONST_VTBL struct _IFFXiEntryEventsVtbl* lpVtbl;
     };
 
-    
+
 
 #ifdef COBJMACROS
 
@@ -228,169 +228,169 @@ EXTERN_C const IID DIID__IFFXiEntryEvents;
 #ifndef __IFxFileManager_INTERFACE_DEFINED__
 #define __IFxFileManager_INTERFACE_DEFINED__
 
-/* interface IFxFileManager */
-/* [object][helpstring][uuid] */ 
+    /* interface IFxFileManager */
+    /* [object][helpstring][uuid] */
 
 
-EXTERN_C const IID IID_IFxFileManager;
+    EXTERN_C const IID IID_IFxFileManager;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
-    
+
     MIDL_INTERFACE("56C0E4F1-2E0C-4777-879F-7D2FD3ADCEAF")
-    IFxFileManager : public IUnknown
+        IFxFileManager : public IUnknown
     {
     public:
-        virtual HRESULT __stdcall FxFileSystemInit( 
-            /* [in] */ unsigned char *pNameFile) = 0;
-        
-        virtual HRESULT __stdcall FxFileSystemExit( void) = 0;
-        
-        virtual HRESULT __stdcall FxRead( 
+        virtual HRESULT __stdcall FxFileSystemInit(
+            /* [in] */ unsigned char* pNameFile) = 0;
+
+        virtual HRESULT __stdcall FxFileSystemExit(void) = 0;
+
+        virtual HRESULT __stdcall FxRead(
             /* [in] */ unsigned short FileNo,
-            /* [in] */ unsigned char *pBufAddr) = 0;
-        
-        virtual HRESULT __stdcall FxReadA( 
+            /* [in] */ unsigned char* pBufAddr) = 0;
+
+        virtual HRESULT __stdcall FxReadA(
             /* [in] */ unsigned short FileNo,
-            /* [in] */ unsigned char *pBufAddr) = 0;
-        
-        virtual HRESULT __stdcall FxReadM( 
-            /* [in] */ _FX_FILE_DATA *FileData,
+            /* [in] */ unsigned char* pBufAddr) = 0;
+
+        virtual HRESULT __stdcall FxReadM(
+            /* [in] */ _FX_FILE_DATA* FileData,
             /* [in] */ unsigned int FileDataNum) = 0;
-        
-        virtual HRESULT __stdcall FxReadEx( 
+
+        virtual HRESULT __stdcall FxReadEx(
             /* [in] */ unsigned short FileNo,
             /* [in] */ unsigned long StartOffset,
-            /* [in] */ void *CtrlFunc) = 0;
-        
-        virtual HRESULT __stdcall FxWrite( 
+            /* [in] */ void* CtrlFunc) = 0;
+
+        virtual HRESULT __stdcall FxWrite(
             /* [in] */ unsigned short FileNo,
             /* [in] */ unsigned long WriteLength,
-            /* [in] */ unsigned char *pBufAddr) = 0;
-        
-        virtual HRESULT __stdcall FxSeek( 
+            /* [in] */ unsigned char* pBufAddr) = 0;
+
+        virtual HRESULT __stdcall FxSeek(
             /* [in] */ unsigned short FileNo) = 0;
-        
-        virtual HRESULT __stdcall FxGetFileSize( 
+
+        virtual HRESULT __stdcall FxGetFileSize(
             /* [in] */ unsigned short FileNo,
-            /* [out] */ unsigned long *FileLength) = 0;
-        
-        virtual HRESULT __stdcall FxTestFileSize( 
+            /* [out] */ unsigned long* FileLength) = 0;
+
+        virtual HRESULT __stdcall FxTestFileSize(
             /* [in] */ unsigned short FileNo,
-            /* [out] */ unsigned long *FileLength) = 0;
-        
-        virtual HRESULT __stdcall FxFinishedCheck( 
+            /* [out] */ unsigned long* FileLength) = 0;
+
+        virtual HRESULT __stdcall FxFinishedCheck(
             /* [in] */ unsigned short FileNo,
-            /* [out] */ unsigned char *bFinishedFlg) = 0;
-        
-        virtual HRESULT __stdcall FxFinishedCheckB( 
-            /* [in] */ unsigned char *pBufAddr,
-            /* [out] */ unsigned char *bFinishedFlg) = 0;
-        
-        virtual HRESULT __stdcall FxWait( void) = 0;
-        
-        virtual HRESULT __stdcall FxPeriodicCheck( void) = 0;
-        
-        virtual HRESULT __stdcall FxGetFileSysteStatus( 
-            /* [out] */ long *Status) = 0;
-        
+            /* [out] */ unsigned char* bFinishedFlg) = 0;
+
+        virtual HRESULT __stdcall FxFinishedCheckB(
+            /* [in] */ unsigned char* pBufAddr,
+            /* [out] */ unsigned char* bFinishedFlg) = 0;
+
+        virtual HRESULT __stdcall FxWait(void) = 0;
+
+        virtual HRESULT __stdcall FxPeriodicCheck(void) = 0;
+
+        virtual HRESULT __stdcall FxGetFileSysteStatus(
+            /* [out] */ long* Status) = 0;
+
     };
-    
-    
+
+
 #else 	/* C style interface */
 
     typedef struct IFxFileManagerVtbl
     {
         BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IFxFileManager * This,
-            /* [in] */ REFIID riid,
-            /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IFxFileManager * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            IFxFileManager * This);
-        
-        HRESULT ( __stdcall *FxFileSystemInit )( 
-            IFxFileManager * This,
-            /* [in] */ unsigned char *pNameFile);
-        
-        HRESULT ( __stdcall *FxFileSystemExit )( 
-            IFxFileManager * This);
-        
-        HRESULT ( __stdcall *FxRead )( 
-            IFxFileManager * This,
+
+            HRESULT(STDMETHODCALLTYPE* QueryInterface)(
+                IFxFileManager* This,
+                /* [in] */ REFIID riid,
+                /* [annotation][iid_is][out] */
+                _COM_Outptr_  void** ppvObject);
+
+        ULONG(STDMETHODCALLTYPE* AddRef)(
+            IFxFileManager* This);
+
+        ULONG(STDMETHODCALLTYPE* Release)(
+            IFxFileManager* This);
+
+        HRESULT(__stdcall* FxFileSystemInit)(
+            IFxFileManager* This,
+            /* [in] */ unsigned char* pNameFile);
+
+        HRESULT(__stdcall* FxFileSystemExit)(
+            IFxFileManager* This);
+
+        HRESULT(__stdcall* FxRead)(
+            IFxFileManager* This,
             /* [in] */ unsigned short FileNo,
-            /* [in] */ unsigned char *pBufAddr);
-        
-        HRESULT ( __stdcall *FxReadA )( 
-            IFxFileManager * This,
+            /* [in] */ unsigned char* pBufAddr);
+
+        HRESULT(__stdcall* FxReadA)(
+            IFxFileManager* This,
             /* [in] */ unsigned short FileNo,
-            /* [in] */ unsigned char *pBufAddr);
-        
-        HRESULT ( __stdcall *FxReadM )( 
-            IFxFileManager * This,
-            /* [in] */ _FX_FILE_DATA *FileData,
+            /* [in] */ unsigned char* pBufAddr);
+
+        HRESULT(__stdcall* FxReadM)(
+            IFxFileManager* This,
+            /* [in] */ _FX_FILE_DATA* FileData,
             /* [in] */ unsigned int FileDataNum);
-        
-        HRESULT ( __stdcall *FxReadEx )( 
-            IFxFileManager * This,
+
+        HRESULT(__stdcall* FxReadEx)(
+            IFxFileManager* This,
             /* [in] */ unsigned short FileNo,
             /* [in] */ unsigned long StartOffset,
-            /* [in] */ void *CtrlFunc);
-        
-        HRESULT ( __stdcall *FxWrite )( 
-            IFxFileManager * This,
+            /* [in] */ void* CtrlFunc);
+
+        HRESULT(__stdcall* FxWrite)(
+            IFxFileManager* This,
             /* [in] */ unsigned short FileNo,
             /* [in] */ unsigned long WriteLength,
-            /* [in] */ unsigned char *pBufAddr);
-        
-        HRESULT ( __stdcall *FxSeek )( 
-            IFxFileManager * This,
+            /* [in] */ unsigned char* pBufAddr);
+
+        HRESULT(__stdcall* FxSeek)(
+            IFxFileManager* This,
             /* [in] */ unsigned short FileNo);
-        
-        HRESULT ( __stdcall *FxGetFileSize )( 
-            IFxFileManager * This,
+
+        HRESULT(__stdcall* FxGetFileSize)(
+            IFxFileManager* This,
             /* [in] */ unsigned short FileNo,
-            /* [out] */ unsigned long *FileLength);
-        
-        HRESULT ( __stdcall *FxTestFileSize )( 
-            IFxFileManager * This,
+            /* [out] */ unsigned long* FileLength);
+
+        HRESULT(__stdcall* FxTestFileSize)(
+            IFxFileManager* This,
             /* [in] */ unsigned short FileNo,
-            /* [out] */ unsigned long *FileLength);
-        
-        HRESULT ( __stdcall *FxFinishedCheck )( 
-            IFxFileManager * This,
+            /* [out] */ unsigned long* FileLength);
+
+        HRESULT(__stdcall* FxFinishedCheck)(
+            IFxFileManager* This,
             /* [in] */ unsigned short FileNo,
-            /* [out] */ unsigned char *bFinishedFlg);
-        
-        HRESULT ( __stdcall *FxFinishedCheckB )( 
-            IFxFileManager * This,
-            /* [in] */ unsigned char *pBufAddr,
-            /* [out] */ unsigned char *bFinishedFlg);
-        
-        HRESULT ( __stdcall *FxWait )( 
-            IFxFileManager * This);
-        
-        HRESULT ( __stdcall *FxPeriodicCheck )( 
-            IFxFileManager * This);
-        
-        HRESULT ( __stdcall *FxGetFileSysteStatus )( 
-            IFxFileManager * This,
-            /* [out] */ long *Status);
-        
+            /* [out] */ unsigned char* bFinishedFlg);
+
+        HRESULT(__stdcall* FxFinishedCheckB)(
+            IFxFileManager* This,
+            /* [in] */ unsigned char* pBufAddr,
+            /* [out] */ unsigned char* bFinishedFlg);
+
+        HRESULT(__stdcall* FxWait)(
+            IFxFileManager* This);
+
+        HRESULT(__stdcall* FxPeriodicCheck)(
+            IFxFileManager* This);
+
+        HRESULT(__stdcall* FxGetFileSysteStatus)(
+            IFxFileManager* This,
+            /* [out] */ long* Status);
+
         END_INTERFACE
     } IFxFileManagerVtbl;
 
     interface IFxFileManager
     {
-        CONST_VTBL struct IFxFileManagerVtbl *lpVtbl;
+        CONST_VTBL struct IFxFileManagerVtbl* lpVtbl;
     };
 
-    
+
 
 #ifdef COBJMACROS
 
@@ -464,71 +464,71 @@ EXTERN_C const IID IID_IFxFileManager;
 #ifndef __IFFXiEntry_INTERFACE_DEFINED__
 #define __IFFXiEntry_INTERFACE_DEFINED__
 
-/* interface IFFXiEntry */
-/* [object][helpstring][uuid] */ 
+    /* interface IFFXiEntry */
+    /* [object][helpstring][uuid] */
 
 
-EXTERN_C const IID IID_IFFXiEntry;
+    EXTERN_C const IID IID_IFFXiEntry;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
-    
+
     MIDL_INTERFACE("989D790C-6236-11D4-80E9-00105A81E890")
-    IFFXiEntry : public IUnknown
+        IFFXiEntry : public IUnknown
     {
     public:
-        virtual HRESULT __stdcall GameStart( 
-            /* [in] */ IUnknown *pPol,
-            /* [out] */ IUnknown **pFFXiMessage) = 0;
-        
-        virtual /* [helpstring][propget] */ HRESULT __stdcall get_FxFileManager( 
-            /* [retval][out] */ IFxFileManager **pVal) = 0;
-        
-        virtual HRESULT __stdcall getVersion( 
-            /* [retval][out] */ unsigned long *pVal) = 0;
-        
+        virtual HRESULT __stdcall GameStart(
+            /* [in] */ IUnknown * pPol,
+            /* [out] */ IUnknown * *pFFXiMessage) = 0;
+
+        virtual /* [helpstring][propget] */ HRESULT __stdcall get_FxFileManager(
+            /* [retval][out] */ IFxFileManager** pVal) = 0;
+
+        virtual HRESULT __stdcall getVersion(
+            /* [retval][out] */ unsigned long* pVal) = 0;
+
     };
-    
-    
+
+
 #else 	/* C style interface */
 
     typedef struct IFFXiEntryVtbl
     {
         BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IFFXiEntry * This,
-            /* [in] */ REFIID riid,
-            /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IFFXiEntry * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            IFFXiEntry * This);
-        
-        HRESULT ( __stdcall *GameStart )( 
-            IFFXiEntry * This,
-            /* [in] */ IUnknown *pPol,
-            /* [out] */ IUnknown **pFFXiMessage);
-        
-        /* [helpstring][propget] */ HRESULT ( __stdcall *get_FxFileManager )( 
-            IFFXiEntry * This,
-            /* [retval][out] */ IFxFileManager **pVal);
-        
-        HRESULT ( __stdcall *getVersion )( 
-            IFFXiEntry * This,
-            /* [retval][out] */ unsigned long *pVal);
-        
+
+            HRESULT(STDMETHODCALLTYPE* QueryInterface)(
+                IFFXiEntry* This,
+                /* [in] */ REFIID riid,
+                /* [annotation][iid_is][out] */
+                _COM_Outptr_  void** ppvObject);
+
+        ULONG(STDMETHODCALLTYPE* AddRef)(
+            IFFXiEntry* This);
+
+        ULONG(STDMETHODCALLTYPE* Release)(
+            IFFXiEntry* This);
+
+        HRESULT(__stdcall* GameStart)(
+            IFFXiEntry* This,
+            /* [in] */ IUnknown* pPol,
+            /* [out] */ IUnknown** pFFXiMessage);
+
+        /* [helpstring][propget] */ HRESULT(__stdcall* get_FxFileManager)(
+            IFFXiEntry* This,
+            /* [retval][out] */ IFxFileManager** pVal);
+
+        HRESULT(__stdcall* getVersion)(
+            IFFXiEntry* This,
+            /* [retval][out] */ unsigned long* pVal);
+
         END_INTERFACE
     } IFFXiEntryVtbl;
 
     interface IFFXiEntry
     {
-        CONST_VTBL struct IFFXiEntryVtbl *lpVtbl;
+        CONST_VTBL struct IFFXiEntryVtbl* lpVtbl;
     };
 
-    
+
 
 #ifdef COBJMACROS
 
@@ -563,26 +563,26 @@ EXTERN_C const IID IID_IFFXiEntry;
 #endif 	/* __IFFXiEntry_INTERFACE_DEFINED__ */
 
 
-EXTERN_C const CLSID CLSID_FFXiEntry;
+    EXTERN_C const CLSID CLSID_FFXiEntry;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("989D790D-6236-11D4-80E9-00105A81E890")
-FFXiEntry;
+    class DECLSPEC_UUID("989D790D-6236-11D4-80E9-00105A81E890")
+        FFXiEntry;
 #endif
 
-EXTERN_C const CLSID CLSID_FxFileManager;
+    EXTERN_C const CLSID CLSID_FxFileManager;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("0DF0E951-D03C-4A94-90EF-40AE60668F5F")
-FxFileManager;
+    class DECLSPEC_UUID("0DF0E951-D03C-4A94-90EF-40AE60668F5F")
+        FxFileManager;
 #endif
 #endif /* __FFXILib_LIBRARY_DEFINED__ */
 
-/* Additional Prototypes for ALL interfaces */
+    /* Additional Prototypes for ALL interfaces */
 
-/* end of Additional Prototypes */
+    /* end of Additional Prototypes */
 
 #ifdef __cplusplus
 }

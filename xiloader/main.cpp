@@ -21,18 +21,38 @@ This file is part of DarkStar-server source code.
 ===========================================================================
 */
 
-#include "defines.h"
+#include "pch.h"
+
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include "console.h"
 #include "functions.h"
 #include "network.h"
+#include <intrin.h>
+
+#include "main.h"
+
+extern "C" EDENMAIN_API const char* GetLauncherVersion(void)
+{
+    return (const char*)EDEN_VERSION;
+}
+
+#include "defines.h"
+
+#pragma intrinsic(_ReturnAddress)
 
 /* Global Variables */
-xiloader::Language g_Language = xiloader::Language::English; // The language of the loader to be used for polcore.
-std::string g_ServerAddress = "127.0.0.1"; // The server address to connect to.
+Language g_Language = Language::English; // The language of the loader to be used for polcore.
+std::string g_ServerAddress = "play.edenxi.com"; // The server address to connect to.
 std::string g_ServerPort = "51220"; // The server lobby server port to connect to.
+std::string g_Email = ""; // The email provided during account creation.
 std::string g_Username = ""; // The username being logged in with.
 std::string g_Password = ""; // The password being logged in with.
+std::string g_UniqueKey = ""; // The unique key given to the requested connection attempt.
+
+/* Session Related Variables */
+unsigned char g_SessionHash[16] = { 0 };
+
 char* g_CharacterList = NULL; // Pointer to the character list data being sent from the server.
 bool g_IsRunning = false; // Flag to determine if the network threads should hault.
 bool g_Hide = false; // Determines whether or not to hide the console window after FFXI starts.
@@ -46,7 +66,7 @@ DWORD g_HairpinReturnAddress; // Hairpin return address to allow the code cave t
  */
 extern "C"
 {
-    hostent* (WINAPI __stdcall * Real_gethostbyname)(const char* name) = gethostbyname;
+    hostent* (WINAPI __stdcall* Real_gethostbyname)(const char* name) = gethostbyname;
 }
 
 /**
@@ -55,9 +75,21 @@ extern "C"
 __declspec(naked) void HairpinFixCave(void)
 {
     __asm mov eax, g_NewServerAddress
-    __asm mov [edx + 0x012E90], eax
-    __asm mov [edx], eax
+    __asm mov[edx + 0x012E90], eax
+    __asm mov[edx], eax
     __asm jmp g_HairpinReturnAddress
+}
+
+extern "C"     int(WSAAPI * Real_send)(__in SOCKET s, __in_bcount(len) const char FAR * buf, __in int len, __in int flags) = send;
+
+int WSAAPI Mine_send(__in SOCKET s, __in_bcount(len) const char FAR* buf, __in int len, __in int flags)
+{
+    const auto ret = _ReturnAddress();
+    if (len == 0x98 && buf[8] == 0x26) { // always send server provided session hash in the first view socket outbound packet
+        memcpy((BYTE*)(buf + 12), g_SessionHash, 16);
+    }
+
+    return Real_send(s, buf, len, flags);
 }
 
 /**
@@ -78,7 +110,7 @@ DWORD ApplyHairpinFixThread(LPVOID lpParam)
     } while (GetModuleHandleA("FFXiMain.dll") == NULL);
 
     /* Convert server address.. */
-    xiloader::network::ResolveHostname(g_ServerAddress.c_str(), &g_NewServerAddress);
+    network::ResolveHostname(g_ServerAddress.c_str(), &g_NewServerAddress);
 
     // Locate the main hairpin location..
     //
@@ -86,10 +118,10 @@ DWORD ApplyHairpinFixThread(LPVOID lpParam)
     //      8B 82 902E0100        - mov eax, [edx+00012E90]
     //      89 02                 - mov [edx], eax <-- edit this
 
-    auto hairpinAddress = (DWORD)xiloader::functions::FindPattern("FFXiMain.dll", (BYTE*)"\x8B\x82\xFF\xFF\xFF\xFF\x89\x02\x8B\x0D", "xx????xxxx");
+    auto hairpinAddress = (DWORD)functions::FindPattern("FFXiMain.dll", (BYTE*)"\x8B\x82\xFF\xFF\xFF\xFF\x89\x02\x8B\x0D", "xx????xxxx");
     if (hairpinAddress == 0)
     {
-        xiloader::console::output(xiloader::color::error, "Failed to locate main hairpin hack address!");
+        console::output(color::error, "Failed to locate main hairpin hack address!");
         return 0;
     }
 
@@ -102,10 +134,10 @@ DWORD ApplyHairpinFixThread(LPVOID lpParam)
     //      8B 46 0C              - mov eax, [esi+0C]
     //      85 C0                 - test eax, eax
 
-    auto zoneChangeAddress = (DWORD)xiloader::functions::FindPattern("FFXiMain.dll", (BYTE*)"\x8B\x0D\xFF\xFF\xFF\xFF\x89\x01\x8B\x46", "xx????xxxx");
+    auto zoneChangeAddress = (DWORD)functions::FindPattern("FFXiMain.dll", (BYTE*)"\x8B\x0D\xFF\xFF\xFF\xFF\x89\x01\x8B\x46", "xx????xxxx");
     if (zoneChangeAddress == 0)
     {
-        xiloader::console::output(xiloader::color::error, "Failed to locate zone change hairpin address!");
+        console::output(color::error, "Failed to locate zone change hairpin address!");
         return 0;
     }
 
@@ -122,7 +154,7 @@ DWORD ApplyHairpinFixThread(LPVOID lpParam)
     /* Apply zone ip change patch.. */
     memset((LPVOID)(zoneChangeAddress + 0x06), 0x90, 2);
 
-    xiloader::console::output(xiloader::color::success, "Hairpin fix applied!");
+    console::output(color::success, "Hairpin fix applied!");
     return 0;
 }
 
@@ -135,7 +167,7 @@ DWORD ApplyHairpinFixThread(LPVOID lpParam)
  */
 hostent* __stdcall Mine_gethostbyname(const char* name)
 {
-    xiloader::console::output(xiloader::color::debug, "Resolving host: %s", name);
+    console::output(color::debug, "Resolving host: %s", name);
 
     if (!strcmp("ffxi00.pol.com", name))
         return Real_gethostbyname(g_ServerAddress.c_str());
@@ -152,8 +184,8 @@ hostent* __stdcall Mine_gethostbyname(const char* name)
  */
 inline DWORD FindINETMutex(void)
 {
-    const char* module = (g_Language == xiloader::Language::European) ? "polcoreeu.dll" : "polcore.dll";
-    auto result = (DWORD)xiloader::functions::FindPattern(module, (BYTE*)"\x8B\x56\x2C\x8B\x46\x28\x8B\x4E\x24\x52\x50\x51", "xxxxxxxxxxxx");
+    const char* module = (g_Language == Language::European) ? "polcoreeu.dll" : "polcore.dll";
+    auto result = (DWORD)functions::FindPattern(module, (BYTE*)"\x8B\x56\x2C\x8B\x46\x28\x8B\x4E\x24\x52\x50\x51", "xxxxxxxxxxxx");
     return (*(DWORD*)(result - 4) + (result));
 }
 
@@ -164,8 +196,8 @@ inline DWORD FindINETMutex(void)
  */
 inline DWORD FindPolConn(void)
 {
-    const char* module = (g_Language == xiloader::Language::European) ? "polcoreeu.dll" : "polcore.dll";
-    auto result = (DWORD)xiloader::functions::FindPattern(module, (BYTE*)"\x81\xC6\x38\x03\x00\x00\x83\xC4\x04\x81\xFE", "xxxxxxxxxxx");
+    const char* module = (g_Language == Language::European) ? "polcoreeu.dll" : "polcore.dll";
+    auto result = (DWORD)functions::FindPattern(module, (BYTE*)"\x81\xC6\x38\x03\x00\x00\x83\xC4\x04\x81\xFE", "xxxxxxxxxxx");
     return (*(DWORD*)(result - 10));
 }
 
@@ -189,23 +221,38 @@ inline LPVOID FindCharacters(void** commFuncs)
  *
  * @return 1 on error, 0 on success.
  */
-int __cdecl main(int argc, char* argv[])
+extern "C" EDENMAIN_API int __cdecl XiLoaderMain(int argc, char* argv[])
 {
-    bool bUseHairpinFix = false;
+    bool bUseHairpinFix = true; // always enable for now
+
+    // check to make sure the filename is edenxi.exe (some disallowed tools only work on pol.exe)
+    std::string filename(argv[0]);
+    if (filename.substr(filename.size() - 10, filename.size()) != "edenxi.exe")
+    {
+        console::output(color::warning, "Warning: Using any bootloader not downloaded from edenxi.com is not allowed.");
+        console::output(color::warning, "If you received this file from another source press CTRL + c to quit.");
+        Sleep(30000);
+        return 1;
+    }
 
     /* Output the DarkStar banner.. */
-    xiloader::console::output(xiloader::color::lightred, "==========================================================");
-    xiloader::console::output(xiloader::color::lightgreen, "DarkStar Boot Loader (c) 2015 DarkStar Team");
-    xiloader::console::output(xiloader::color::lightpurple, "Bug Reports: https://github.com/DarkstarProject/darkstar/issues");
-    xiloader::console::output(xiloader::color::lightpurple, "Git Repo   : https://github.com/DarkstarProject/darkstar");
-    xiloader::console::output(xiloader::color::lightred, "==========================================================");
+    console::output(color::lightred, "===========================================================================");
+    console::output(color::lightgreen, "DarkStar Boot Loader (c) 2020 DarkStar Team");
+    console::output(color::lightgreen, "Modified for use with the Eden Server, Version %s", EDEN_VERSION);
+    console::output(color::lightcyan, "Bugs: https://github.com/EdenServer/community/issues");
+    console::output(color::lightcyan, "Discord: https://discord.gg/MWtDws8");
+    console::output(color::lightcyan, "Website: https://www.edenxi.com");
+    console::output(color::lightred, "===========================================================================");
+    console::output(color::lightyelllow, "By connecting to Eden you agree to our terms and conditions.");
+    console::output(color::lightyelllow, "Please read these on the server information section of our website.");
+    console::output(color::lightred, "===========================================================================");
 
     /* Initialize Winsock */
     WSADATA wsaData = { 0 };
     auto ret = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (ret != 0)
     {
-        xiloader::console::output(xiloader::color::error, "Failed to initialize winsock, error code: %d", ret);
+        console::output(color::error, "Failed to initialize winsock, error code: %d", ret);
         return 1;
     }
 
@@ -216,7 +263,7 @@ int __cdecl main(int argc, char* argv[])
         /* Cleanup Winsock */
         WSACleanup();
 
-        xiloader::console::output(xiloader::color::error, "Failed to initialize COM, error code: %d", hResult);
+        console::output(color::error, "Failed to initialize COM, error code: %d", hResult);
         return 1;
     }
 
@@ -224,13 +271,14 @@ int __cdecl main(int argc, char* argv[])
     DetourTransactionBegin();
     DetourUpdateThread(GetCurrentThread());
     DetourAttach(&(PVOID&)Real_gethostbyname, Mine_gethostbyname);
+    DetourAttach(&(PVOID&)Real_send, Mine_send);
     if (DetourTransactionCommit() != NO_ERROR)
     {
         /* Cleanup COM and Winsock */
         CoUninitialize();
         WSACleanup();
 
-        xiloader::console::output(xiloader::color::error, "Failed to detour function 'gethostbyname'. Cannot continue!");
+        console::output(color::error, "Failed to detour function 'gethostbyname'. Cannot continue!");
         return 1;
     }
 
@@ -265,17 +313,24 @@ int __cdecl main(int argc, char* argv[])
             continue;
         }
 
+        /* Unique Key Argument */
+        if (!_strnicmp(argv[x], "--ukey", 6))
+        {
+            g_UniqueKey = argv[++x];
+            continue;
+        }
+
         /* Language Argument */
         if (!_strnicmp(argv[x], "--lang", 6))
         {
             std::string language = argv[++x];
 
             if (!_strnicmp(language.c_str(), "JP", 2) || !_strnicmp(language.c_str(), "0", 1))
-                g_Language = xiloader::Language::Japanese;
+                g_Language = Language::Japanese;
             if (!_strnicmp(language.c_str(), "US", 2) || !_strnicmp(language.c_str(), "1", 1))
-                g_Language = xiloader::Language::English;
+                g_Language = Language::English;
             if (!_strnicmp(language.c_str(), "EU", 2) || !_strnicmp(language.c_str(), "2", 1))
-                g_Language = xiloader::Language::European;
+                g_Language = Language::European;
 
             continue;
         }
@@ -294,21 +349,21 @@ int __cdecl main(int argc, char* argv[])
             continue;
         }
 
-        xiloader::console::output(xiloader::color::warning, "Found unknown command argument: %s", argv[x]);
+        console::output(color::warning, "Found unknown command argument: %s", argv[x]);
     }
 
     /* Attempt to resolve the server address.. */
     ULONG ulAddress = 0;
-    if (xiloader::network::ResolveHostname(g_ServerAddress.c_str(), &ulAddress))
+    if (network::ResolveHostname(g_ServerAddress.c_str(), &ulAddress, argv[0]))
     {
-        g_ServerAddress = inet_ntoa(*((struct in_addr*)&ulAddress));
+        g_ServerAddress = inet_ntoa(*((struct in_addr*) & ulAddress));
 
         /* Attempt to create socket to server..*/
-        xiloader::datasocket sock;
-        if (xiloader::network::CreateConnection(&sock, "54231"))
+        datasocket sock;
+        if (network::CreateConnection(&sock, "54231"))
         {
             /* Attempt to verify the users account info.. */
-            while (!xiloader::network::VerifyAccount(&sock))
+            while (!network::VerifyAccount(&sock))
                 Sleep(10);
 
             /* Start hairpin hack thread if required.. */
@@ -319,27 +374,27 @@ int __cdecl main(int argc, char* argv[])
 
             /* Create listen servers.. */
             g_IsRunning = true;
-            HANDLE hFFXiServer = CreateThread(NULL, 0, xiloader::network::FFXiServer, &sock, 0, NULL);
-            HANDLE hPolServer = CreateThread(NULL, 0, xiloader::network::PolServer, NULL, 0, NULL);
+            HANDLE hFFXiServer = CreateThread(NULL, 0, network::FFXiServer, &sock, 0, NULL);
+            HANDLE hPolServer = CreateThread(NULL, 0, network::PolServer, NULL, 0, NULL);
 
             /* Attempt to create polcore instance..*/
             IPOLCoreCom* polcore = NULL;
-            if (CoCreateInstance(xiloader::CLSID_POLCoreCom[g_Language], NULL, 0x17, xiloader::IID_IPOLCoreCom[g_Language], (LPVOID*)&polcore) != S_OK)
+            if (CoCreateInstance(CLSID_POLCoreCom[g_Language], NULL, 0x17, IID_IPOLCoreCom[g_Language], (LPVOID*)&polcore) != S_OK)
             {
-                xiloader::console::output(xiloader::color::error, "Failed to initialize instance of polcore!");
+                console::output(color::error, "Failed to initialize instance of polcore!");
             }
             else
             {
                 /* Invoke the setup functions for polcore.. */
                 polcore->SetAreaCode(g_Language);
-                polcore->SetParamInit(GetModuleHandle(NULL), " /game eAZcFcB -net 3");
+                polcore->SetParamInit(GetModuleHandle(NULL), (LPSTR)" /game eAZcFcB -net 3");
 
                 /* Obtain the common function table.. */
-                void * (**lpCommandTable)(...);
+                void* (**lpCommandTable)(...);
                 polcore->GetCommonFunctionTable((unsigned long**)&lpCommandTable);
 
                 /* Invoke the inet mutex function.. */
-                auto findMutex = (void * (*)(...))FindINETMutex();
+                auto findMutex = (void* (*)(...))FindINETMutex();
                 findMutex();
 
                 /* Locate and prepare the pol connection.. */
@@ -350,28 +405,28 @@ int __cdecl main(int argc, char* argv[])
                 memcpy(polConnection + 0x48, &enc, sizeof(char**));
 
                 /* Locate the character storage buffer.. */
-                g_CharacterList = (char*)FindCharacters((void **)lpCommandTable);
+                g_CharacterList = (char*)FindCharacters((void**)lpCommandTable);
 
                 /* Invoke the setup functions for polcore.. */
                 lpCommandTable[POLFUNC_REGISTRY_LANG](g_Language);
-                lpCommandTable[POLFUNC_FFXI_LANG](xiloader::functions::GetRegistryPlayOnlineLanguage(g_Language));
-                lpCommandTable[POLFUNC_REGISTRY_KEY](xiloader::functions::GetRegistryPlayOnlineKey(g_Language));
-                lpCommandTable[POLFUNC_INSTALL_FOLDER](xiloader::functions::GetRegistryPlayOnlineInstallFolder(g_Language));
+                lpCommandTable[POLFUNC_FFXI_LANG](functions::GetRegistryPlayOnlineLanguage(g_Language));
+                lpCommandTable[POLFUNC_REGISTRY_KEY](functions::GetRegistryPlayOnlineKey(g_Language));
+                lpCommandTable[POLFUNC_INSTALL_FOLDER](functions::GetRegistryPlayOnlineInstallFolder(g_Language));
                 lpCommandTable[POLFUNC_INET_MUTEX]();
 
                 /* Attempt to create FFXi instance..*/
                 IFFXiEntry* ffxi = NULL;
-                if (CoCreateInstance(xiloader::CLSID_FFXiEntry, NULL, 0x17, xiloader::IID_IFFXiEntry, (LPVOID*)&ffxi) != S_OK)
+                if (CoCreateInstance(CLSID_FFXiEntry, NULL, 0x17, IID_IFFXiEntry, (LPVOID*)&ffxi) != S_OK)
                 {
-                    xiloader::console::output(xiloader::color::error, "Failed to initialize instance of FFxi!");
+                    console::output(color::error, "Failed to initialize instance of FFxi!");
                 }
                 else
                 {
                     /* Attempt to start Final Fantasy.. */
                     IUnknown* message = NULL;
-                    xiloader::console::hide();
+                    console::hide();
                     ffxi->GameStart(polcore, &message);
-                    xiloader::console::show();
+                    console::show();
                     ffxi->Release();
                 }
 
@@ -381,7 +436,7 @@ int __cdecl main(int argc, char* argv[])
             }
 
             /* Cleanup threads.. */
-            g_IsRunning = false;    
+            g_IsRunning = false;
             TerminateThread(hFFXiServer, 0);
             TerminateThread(hPolServer, 0);
 
@@ -394,7 +449,7 @@ int __cdecl main(int argc, char* argv[])
     }
     else
     {
-        xiloader::console::output(xiloader::color::error, "Failed to resolve server hostname.");
+        console::output(color::error, "Failed to resolve server hostname.");
     }
 
     /* Detach detour for gethostbyname. */
@@ -407,7 +462,7 @@ int __cdecl main(int argc, char* argv[])
     CoUninitialize();
     WSACleanup();
 
-    xiloader::console::output(xiloader::color::error, "Closing...");
+    console::output(color::error, "Closing...");
     Sleep(2000);
 
     return ERROR_SUCCESS;

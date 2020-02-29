@@ -6,15 +6,15 @@
  /* File created by MIDL compiler version 8.00.0603 */
 /* at Tue Jan 28 21:36:22 2014
  */
-/* Compiler settings for polcore.idl:
-    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
-    protocol : dce , ms_ext, c_ext, robust
-    error checks: allocation ref bounds_check enum stub_data 
-    VC __declspec() decoration level: 
-         __declspec(uuid()), __declspec(selectany), __declspec(novtable)
-         DECLSPEC_UUID(), MIDL_INTERFACE()
-*/
-/* @@MIDL_FILE_HEADING(  ) */
+ /* Compiler settings for polcore.idl:
+     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603
+     protocol : dce , ms_ext, c_ext, robust
+     error checks: allocation ref bounds_check enum stub_data
+     VC __declspec() decoration level:
+          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
+          DECLSPEC_UUID(), MIDL_INTERFACE()
+ */
+ /* @@MIDL_FILE_HEADING(  ) */
 
 #pragma warning( disable: 4049 )  /* more than 64k source lines */
 
@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-/* Forward Declarations */ 
+/* Forward Declarations */
 
 #ifndef __IPOLCoreCom_FWD_DEFINED__
 #define __IPOLCoreCom_FWD_DEFINED__
@@ -68,7 +68,7 @@ typedef struct POLCoreCom POLCoreCom;
 
 
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif 
 
 
@@ -76,271 +76,271 @@ extern "C"{
 #ifndef __POLCORELib_LIBRARY_DEFINED__
 #define __POLCORELib_LIBRARY_DEFINED__
 
-/* library POLCORELib */
-/* [custom][custom][custom][helpstring][version][uuid] */ 
+    /* library POLCORELib */
+    /* [custom][custom][custom][helpstring][version][uuid] */
 
-EXTERN_C const IID LIBID_POLCORELib;
+    EXTERN_C const IID LIBID_POLCORELib;
 
 #ifndef __IPOLCoreCom_INTERFACE_DEFINED__
 #define __IPOLCoreCom_INTERFACE_DEFINED__
 
-/* interface IPOLCoreCom */
-/* [object][helpstring][uuid] */ 
+    /* interface IPOLCoreCom */
+    /* [object][helpstring][uuid] */
 
 
-EXTERN_C const IID IID_IPOLCoreCom;
+    EXTERN_C const IID IID_IPOLCoreCom[];
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
-    
+
     MIDL_INTERFACE("E0516654-EF77-435D-AA7D-50D2C069CE34")
-    IPOLCoreCom : public IUnknown
+        IPOLCoreCom : public IUnknown
     {
     public:
-        virtual /* [helpstring] */ HRESULT __stdcall GethInstance( 
-            /* [out] */ HINSTANCE__ **hInstance) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall GetlpCmdLine( 
-            /* [out] */ LPSTR *lpCmdLine) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall SetParamInit( 
-            /* [in] */ HINSTANCE__ *hInstance,
+        virtual /* [helpstring] */ HRESULT __stdcall GethInstance(
+            /* [out] */ HINSTANCE__ * *hInstance) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall GetlpCmdLine(
+            /* [out] */ LPSTR* lpCmdLine) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall SetParamInit(
+            /* [in] */ HINSTANCE__* hInstance,
             /* [in] */ LPSTR lpCmdLine) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall GetWindowsType( 
-            /* [out] */ unsigned long *winType) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall GetCommonFunctionTable( 
-            /* [out] */ unsigned long **ptr) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall PolViewerExec( 
-            /* [in] */ unsigned long *inFunc) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall GetWindowsVersion( 
-            /* [out] */ unsigned long *outPlatformId,
-            /* [out] */ unsigned long *outMajor,
-            /* [out] */ unsigned long *outMinor,
-            /* [out] */ unsigned long *outSPMajor,
-            /* [out] */ BSTR *outOSName,
+
+        virtual /* [helpstring] */ HRESULT __stdcall GetWindowsType(
+            /* [out] */ unsigned long* winType) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall GetCommonFunctionTable(
+            /* [out] */ unsigned long** ptr) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall PolViewerExec(
+            /* [in] */ unsigned long* inFunc) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall GetWindowsVersion(
+            /* [out] */ unsigned long* outPlatformId,
+            /* [out] */ unsigned long* outMajor,
+            /* [out] */ unsigned long* outMinor,
+            /* [out] */ unsigned long* outSPMajor,
+            /* [out] */ BSTR* outOSName,
             /* [in] */ unsigned long inOSNameSize) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall PressAnyKey( 
+
+        virtual /* [helpstring] */ HRESULT __stdcall PressAnyKey(
             /* [in] */ unsigned long inType) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall PolconSetEnableWakeupFuncFlag( 
+
+        virtual /* [helpstring] */ HRESULT __stdcall PolconSetEnableWakeupFuncFlag(
             /* [in] */ unsigned long inType,
             /* [in] */ unsigned long inBool) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall CreateInput( 
+
+        virtual /* [helpstring] */ HRESULT __stdcall CreateInput(
             /* [in] */ wireHWND inWnd) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall UpdateInputState( void) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall GetPadRepeat( 
+
+        virtual /* [helpstring] */ HRESULT __stdcall UpdateInputState(void) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall GetPadRepeat(
             /* [in] */ unsigned long inPanNum,
-            /* [out] */ unsigned long *outState) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall GetPadOn( 
+            /* [out] */ unsigned long* outState) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall GetPadOn(
             /* [in] */ unsigned long inPanNum,
-            /* [out] */ unsigned long *outState) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall FinalCleanup( void) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall SetParamInitW( 
-            /* [in] */ HINSTANCE__ *hInstance,
+            /* [out] */ unsigned long* outState) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall FinalCleanup(void) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall SetParamInitW(
+            /* [in] */ HINSTANCE__* hInstance,
             /* [in] */ LPWSTR lpCmdLine) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall GetlpCmdLineW( 
-            /* [out] */ LPWSTR *lpCmdLine) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall PaintFriendList( 
+
+        virtual /* [helpstring] */ HRESULT __stdcall GetlpCmdLineW(
+            /* [out] */ LPWSTR* lpCmdLine) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall PaintFriendList(
             /* [in] */ wireHDC hdc) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall CreateFriendList( void) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall DestroyFriendList( void) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall SetMaskWindowHandle( 
+
+        virtual /* [helpstring] */ HRESULT __stdcall CreateFriendList(void) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall DestroyFriendList(void) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall SetMaskWindowHandle(
             wireHWND hWnd) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall GetPlayOnlineRegKeyNameW( 
-            /* [out] */ LPWSTR *outName) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall GetPlayOnlineRegKeyNameA( 
-            /* [out] */ LPSTR *outName) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall GetSquareEnixRegKeyNameW( 
-            /* [out] */ LPWSTR *outName) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall GetSquareEnixRegKeyNameA( 
-            /* [out] */ LPSTR *outName) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall SetAreaCode( 
+
+        virtual /* [helpstring] */ HRESULT __stdcall GetPlayOnlineRegKeyNameW(
+            /* [out] */ LPWSTR* outName) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall GetPlayOnlineRegKeyNameA(
+            /* [out] */ LPSTR* outName) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall GetSquareEnixRegKeyNameW(
+            /* [out] */ LPWSTR* outName) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall GetSquareEnixRegKeyNameA(
+            /* [out] */ LPSTR* outName) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall SetAreaCode(
             /* [in] */ long inAreaCode) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall GetAreaCode( 
-            /* [out] */ long *outAreaCode) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall HideMaskWindow( 
+
+        virtual /* [helpstring] */ HRESULT __stdcall GetAreaCode(
+            /* [out] */ long* outAreaCode) = 0;
+
+        virtual /* [helpstring] */ HRESULT __stdcall HideMaskWindow(
             /* [in] */ long inCode) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall ShowMaskWindow( 
+
+        virtual /* [helpstring] */ HRESULT __stdcall ShowMaskWindow(
             /* [in] */ long inCode) = 0;
-        
-        virtual /* [helpstring] */ HRESULT __stdcall IsVisibleMaskWindow( 
-            /* [out] */ long *outIsVisible) = 0;
-        
+
+        virtual /* [helpstring] */ HRESULT __stdcall IsVisibleMaskWindow(
+            /* [out] */ long* outIsVisible) = 0;
+
     };
-    
-    
+
+
 #else 	/* C style interface */
 
     typedef struct IPOLCoreComVtbl
     {
         BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IPOLCoreCom * This,
-            /* [in] */ REFIID riid,
-            /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IPOLCoreCom * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            IPOLCoreCom * This);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GethInstance )( 
-            IPOLCoreCom * This,
-            /* [out] */ HINSTANCE__ **hInstance);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GetlpCmdLine )( 
-            IPOLCoreCom * This,
-            /* [out] */ LPSTR *lpCmdLine);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *SetParamInit )( 
-            IPOLCoreCom * This,
-            /* [in] */ HINSTANCE__ *hInstance,
+
+            HRESULT(STDMETHODCALLTYPE* QueryInterface)(
+                IPOLCoreCom* This,
+                /* [in] */ REFIID riid,
+                /* [annotation][iid_is][out] */
+                _COM_Outptr_  void** ppvObject);
+
+        ULONG(STDMETHODCALLTYPE* AddRef)(
+            IPOLCoreCom* This);
+
+        ULONG(STDMETHODCALLTYPE* Release)(
+            IPOLCoreCom* This);
+
+        /* [helpstring] */ HRESULT(__stdcall* GethInstance)(
+            IPOLCoreCom* This,
+            /* [out] */ HINSTANCE__** hInstance);
+
+        /* [helpstring] */ HRESULT(__stdcall* GetlpCmdLine)(
+            IPOLCoreCom* This,
+            /* [out] */ LPSTR* lpCmdLine);
+
+        /* [helpstring] */ HRESULT(__stdcall* SetParamInit)(
+            IPOLCoreCom* This,
+            /* [in] */ HINSTANCE__* hInstance,
             /* [in] */ LPSTR lpCmdLine);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GetWindowsType )( 
-            IPOLCoreCom * This,
-            /* [out] */ unsigned long *winType);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GetCommonFunctionTable )( 
-            IPOLCoreCom * This,
-            /* [out] */ unsigned long **ptr);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *PolViewerExec )( 
-            IPOLCoreCom * This,
-            /* [in] */ unsigned long *inFunc);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GetWindowsVersion )( 
-            IPOLCoreCom * This,
-            /* [out] */ unsigned long *outPlatformId,
-            /* [out] */ unsigned long *outMajor,
-            /* [out] */ unsigned long *outMinor,
-            /* [out] */ unsigned long *outSPMajor,
-            /* [out] */ BSTR *outOSName,
+
+        /* [helpstring] */ HRESULT(__stdcall* GetWindowsType)(
+            IPOLCoreCom* This,
+            /* [out] */ unsigned long* winType);
+
+        /* [helpstring] */ HRESULT(__stdcall* GetCommonFunctionTable)(
+            IPOLCoreCom* This,
+            /* [out] */ unsigned long** ptr);
+
+        /* [helpstring] */ HRESULT(__stdcall* PolViewerExec)(
+            IPOLCoreCom* This,
+            /* [in] */ unsigned long* inFunc);
+
+        /* [helpstring] */ HRESULT(__stdcall* GetWindowsVersion)(
+            IPOLCoreCom* This,
+            /* [out] */ unsigned long* outPlatformId,
+            /* [out] */ unsigned long* outMajor,
+            /* [out] */ unsigned long* outMinor,
+            /* [out] */ unsigned long* outSPMajor,
+            /* [out] */ BSTR* outOSName,
             /* [in] */ unsigned long inOSNameSize);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *PressAnyKey )( 
-            IPOLCoreCom * This,
+
+        /* [helpstring] */ HRESULT(__stdcall* PressAnyKey)(
+            IPOLCoreCom* This,
             /* [in] */ unsigned long inType);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *PolconSetEnableWakeupFuncFlag )( 
-            IPOLCoreCom * This,
+
+        /* [helpstring] */ HRESULT(__stdcall* PolconSetEnableWakeupFuncFlag)(
+            IPOLCoreCom* This,
             /* [in] */ unsigned long inType,
             /* [in] */ unsigned long inBool);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *CreateInput )( 
-            IPOLCoreCom * This,
+
+        /* [helpstring] */ HRESULT(__stdcall* CreateInput)(
+            IPOLCoreCom* This,
             /* [in] */ wireHWND inWnd);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *UpdateInputState )( 
-            IPOLCoreCom * This);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GetPadRepeat )( 
-            IPOLCoreCom * This,
+
+        /* [helpstring] */ HRESULT(__stdcall* UpdateInputState)(
+            IPOLCoreCom* This);
+
+        /* [helpstring] */ HRESULT(__stdcall* GetPadRepeat)(
+            IPOLCoreCom* This,
             /* [in] */ unsigned long inPanNum,
-            /* [out] */ unsigned long *outState);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GetPadOn )( 
-            IPOLCoreCom * This,
+            /* [out] */ unsigned long* outState);
+
+        /* [helpstring] */ HRESULT(__stdcall* GetPadOn)(
+            IPOLCoreCom* This,
             /* [in] */ unsigned long inPanNum,
-            /* [out] */ unsigned long *outState);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *FinalCleanup )( 
-            IPOLCoreCom * This);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *SetParamInitW )( 
-            IPOLCoreCom * This,
-            /* [in] */ HINSTANCE__ *hInstance,
+            /* [out] */ unsigned long* outState);
+
+        /* [helpstring] */ HRESULT(__stdcall* FinalCleanup)(
+            IPOLCoreCom* This);
+
+        /* [helpstring] */ HRESULT(__stdcall* SetParamInitW)(
+            IPOLCoreCom* This,
+            /* [in] */ HINSTANCE__* hInstance,
             /* [in] */ LPWSTR lpCmdLine);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GetlpCmdLineW )( 
-            IPOLCoreCom * This,
-            /* [out] */ LPWSTR *lpCmdLine);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *PaintFriendList )( 
-            IPOLCoreCom * This,
+
+        /* [helpstring] */ HRESULT(__stdcall* GetlpCmdLineW)(
+            IPOLCoreCom* This,
+            /* [out] */ LPWSTR* lpCmdLine);
+
+        /* [helpstring] */ HRESULT(__stdcall* PaintFriendList)(
+            IPOLCoreCom* This,
             /* [in] */ wireHDC hdc);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *CreateFriendList )( 
-            IPOLCoreCom * This);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *DestroyFriendList )( 
-            IPOLCoreCom * This);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *SetMaskWindowHandle )( 
-            IPOLCoreCom * This,
+
+        /* [helpstring] */ HRESULT(__stdcall* CreateFriendList)(
+            IPOLCoreCom* This);
+
+        /* [helpstring] */ HRESULT(__stdcall* DestroyFriendList)(
+            IPOLCoreCom* This);
+
+        /* [helpstring] */ HRESULT(__stdcall* SetMaskWindowHandle)(
+            IPOLCoreCom* This,
             wireHWND hWnd);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GetPlayOnlineRegKeyNameW )( 
-            IPOLCoreCom * This,
-            /* [out] */ LPWSTR *outName);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GetPlayOnlineRegKeyNameA )( 
-            IPOLCoreCom * This,
-            /* [out] */ LPSTR *outName);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GetSquareEnixRegKeyNameW )( 
-            IPOLCoreCom * This,
-            /* [out] */ LPWSTR *outName);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GetSquareEnixRegKeyNameA )( 
-            IPOLCoreCom * This,
-            /* [out] */ LPSTR *outName);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *SetAreaCode )( 
-            IPOLCoreCom * This,
+
+        /* [helpstring] */ HRESULT(__stdcall* GetPlayOnlineRegKeyNameW)(
+            IPOLCoreCom* This,
+            /* [out] */ LPWSTR* outName);
+
+        /* [helpstring] */ HRESULT(__stdcall* GetPlayOnlineRegKeyNameA)(
+            IPOLCoreCom* This,
+            /* [out] */ LPSTR* outName);
+
+        /* [helpstring] */ HRESULT(__stdcall* GetSquareEnixRegKeyNameW)(
+            IPOLCoreCom* This,
+            /* [out] */ LPWSTR* outName);
+
+        /* [helpstring] */ HRESULT(__stdcall* GetSquareEnixRegKeyNameA)(
+            IPOLCoreCom* This,
+            /* [out] */ LPSTR* outName);
+
+        /* [helpstring] */ HRESULT(__stdcall* SetAreaCode)(
+            IPOLCoreCom* This,
             /* [in] */ long inAreaCode);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *GetAreaCode )( 
-            IPOLCoreCom * This,
-            /* [out] */ long *outAreaCode);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *HideMaskWindow )( 
-            IPOLCoreCom * This,
+
+        /* [helpstring] */ HRESULT(__stdcall* GetAreaCode)(
+            IPOLCoreCom* This,
+            /* [out] */ long* outAreaCode);
+
+        /* [helpstring] */ HRESULT(__stdcall* HideMaskWindow)(
+            IPOLCoreCom* This,
             /* [in] */ long inCode);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *ShowMaskWindow )( 
-            IPOLCoreCom * This,
+
+        /* [helpstring] */ HRESULT(__stdcall* ShowMaskWindow)(
+            IPOLCoreCom* This,
             /* [in] */ long inCode);
-        
-        /* [helpstring] */ HRESULT ( __stdcall *IsVisibleMaskWindow )( 
-            IPOLCoreCom * This,
-            /* [out] */ long *outIsVisible);
-        
+
+        /* [helpstring] */ HRESULT(__stdcall* IsVisibleMaskWindow)(
+            IPOLCoreCom* This,
+            /* [out] */ long* outIsVisible);
+
         END_INTERFACE
     } IPOLCoreComVtbl;
 
     interface IPOLCoreCom
     {
-        CONST_VTBL struct IPOLCoreComVtbl *lpVtbl;
+        CONST_VTBL struct IPOLCoreComVtbl* lpVtbl;
     };
 
-    
+
 
 #ifdef COBJMACROS
 
@@ -456,101 +456,101 @@ EXTERN_C const IID IID_IPOLCoreCom;
 #ifndef ___IPOLCoreComEvents_INTERFACE_DEFINED__
 #define ___IPOLCoreComEvents_INTERFACE_DEFINED__
 
-/* interface _IPOLCoreComEvents */
-/* [object][oleautomation][dual][helpstring][uuid] */ 
+    /* interface _IPOLCoreComEvents */
+    /* [object][oleautomation][dual][helpstring][uuid] */
 
 
-EXTERN_C const IID IID__IPOLCoreComEvents;
+    EXTERN_C const IID IID__IPOLCoreComEvents;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
-    
+
     MIDL_INTERFACE("0B197CB5-DAFD-48B8-97D2-71E0A776AE4C")
-    _IPOLCoreComEvents : public IDispatch
+        _IPOLCoreComEvents : public IDispatch
     {
     public:
-        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE PolViewerExec( 
-            /* [in] */ unsigned long *inFunc) = 0;
-        
-        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE MaskWindow( 
-            /* [out][in] */ long *ioCode,
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE PolViewerExec(
+            /* [in] */ unsigned long* inFunc) = 0;
+
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE MaskWindow(
+            /* [out][in] */ long* ioCode,
             /* [in] */ long inType) = 0;
-        
+
     };
-    
-    
+
+
 #else 	/* C style interface */
 
     typedef struct _IPOLCoreComEventsVtbl
     {
         BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            _IPOLCoreComEvents * This,
-            /* [in] */ REFIID riid,
-            /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            _IPOLCoreComEvents * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            _IPOLCoreComEvents * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
-            _IPOLCoreComEvents * This,
-            /* [out] */ UINT *pctinfo);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
-            _IPOLCoreComEvents * This,
+
+            HRESULT(STDMETHODCALLTYPE* QueryInterface)(
+                _IPOLCoreComEvents* This,
+                /* [in] */ REFIID riid,
+                /* [annotation][iid_is][out] */
+                _COM_Outptr_  void** ppvObject);
+
+        ULONG(STDMETHODCALLTYPE* AddRef)(
+            _IPOLCoreComEvents* This);
+
+        ULONG(STDMETHODCALLTYPE* Release)(
+            _IPOLCoreComEvents* This);
+
+        HRESULT(STDMETHODCALLTYPE* GetTypeInfoCount)(
+            _IPOLCoreComEvents* This,
+            /* [out] */ UINT* pctinfo);
+
+        HRESULT(STDMETHODCALLTYPE* GetTypeInfo)(
+            _IPOLCoreComEvents* This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
-            /* [out] */ ITypeInfo **ppTInfo);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
-            _IPOLCoreComEvents * This,
+            /* [out] */ ITypeInfo** ppTInfo);
+
+        HRESULT(STDMETHODCALLTYPE* GetIDsOfNames)(
+            _IPOLCoreComEvents* This,
             /* [in] */ REFIID riid,
-            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [size_is][in] */ LPOLESTR* rgszNames,
             /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
-            /* [size_is][out] */ DISPID *rgDispId);
-        
-        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
-            _IPOLCoreComEvents * This,
-            /* [annotation][in] */ 
+            /* [size_is][out] */ DISPID* rgDispId);
+
+        /* [local] */ HRESULT(STDMETHODCALLTYPE* Invoke)(
+            _IPOLCoreComEvents* This,
+            /* [annotation][in] */
             _In_  DISPID dispIdMember,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  REFIID riid,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  LCID lcid,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  WORD wFlags,
-            /* [annotation][out][in] */ 
-            _In_  DISPPARAMS *pDispParams,
-            /* [annotation][out] */ 
-            _Out_opt_  VARIANT *pVarResult,
-            /* [annotation][out] */ 
-            _Out_opt_  EXCEPINFO *pExcepInfo,
-            /* [annotation][out] */ 
-            _Out_opt_  UINT *puArgErr);
-        
-        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *PolViewerExec )( 
-            _IPOLCoreComEvents * This,
-            /* [in] */ unsigned long *inFunc);
-        
-        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *MaskWindow )( 
-            _IPOLCoreComEvents * This,
-            /* [out][in] */ long *ioCode,
+            /* [annotation][out][in] */
+            _In_  DISPPARAMS* pDispParams,
+            /* [annotation][out] */
+            _Out_opt_  VARIANT* pVarResult,
+            /* [annotation][out] */
+            _Out_opt_  EXCEPINFO* pExcepInfo,
+            /* [annotation][out] */
+            _Out_opt_  UINT* puArgErr);
+
+        /* [helpstring][id] */ HRESULT(STDMETHODCALLTYPE* PolViewerExec)(
+            _IPOLCoreComEvents* This,
+            /* [in] */ unsigned long* inFunc);
+
+        /* [helpstring][id] */ HRESULT(STDMETHODCALLTYPE* MaskWindow)(
+            _IPOLCoreComEvents* This,
+            /* [out][in] */ long* ioCode,
             /* [in] */ long inType);
-        
+
         END_INTERFACE
     } _IPOLCoreComEventsVtbl;
 
     interface _IPOLCoreComEvents
     {
-        CONST_VTBL struct _IPOLCoreComEventsVtbl *lpVtbl;
+        CONST_VTBL struct _IPOLCoreComEventsVtbl* lpVtbl;
     };
 
-    
+
 
 #ifdef COBJMACROS
 
@@ -595,18 +595,18 @@ EXTERN_C const IID IID__IPOLCoreComEvents;
 #endif 	/* ___IPOLCoreComEvents_INTERFACE_DEFINED__ */
 
 
-EXTERN_C const CLSID CLSID_POLCoreCom;
+    EXTERN_C const CLSID CLSID_POLCoreCom[];
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("3501F5DD-7894-42DF-866A-A2B6527D8049")
-POLCoreCom;
+    class DECLSPEC_UUID("3501F5DD-7894-42DF-866A-A2B6527D8049")
+        POLCoreCom;
 #endif
 #endif /* __POLCORELib_LIBRARY_DEFINED__ */
 
-/* Additional Prototypes for ALL interfaces */
+    /* Additional Prototypes for ALL interfaces */
 
-/* end of Additional Prototypes */
+    /* end of Additional Prototypes */
 
 #ifdef __cplusplus
 }
