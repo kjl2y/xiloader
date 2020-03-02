@@ -21,6 +21,7 @@ This file is part of DarkStar-server source code.
 ===========================================================================
 */
 
+
 #include "pch.h"
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -28,11 +29,14 @@ This file is part of DarkStar-server source code.
 #include "console.h"
 #include "functions.h"
 #include "network.h"
+#include "hex.h"
 #include <intrin.h>
 
+#include "detours/detours.h"
 #include "main.h"
 
-extern "C" EDENMAIN_API const char* GetLauncherVersion(void)
+//extern "C" EDENMAIN_API 
+const char* GetLauncherVersion(void)
 {
     return (const char*)EDEN_VERSION;
 }
@@ -55,7 +59,13 @@ unsigned char g_SessionHash[16] = { 0 };
 
 char* g_CharacterList = NULL; // Pointer to the character list data being sent from the server.
 bool g_IsRunning = false; // Flag to determine if the network threads should hault.
-bool g_Hide = false; // Determines whether or not to hide the console window after FFXI starts.
+bool g_Hide = true; // Determines whether or not to hide the console window after FFXI starts.
+
+
+
+
+
+
 
 /* Hairpin Fix Variables */
 DWORD g_NewServerAddress; // Hairpin server address to be overriden with.
@@ -72,19 +82,27 @@ extern "C"
 /**
  * @brief Hairpin fix codecave.
  */
-__declspec(naked) void HairpinFixCave(void)
+#ifndef __GNUC__
+__declspec(naked)
+#endif
+void HairpinFixCave(void)
 {
+#ifndef __GNUC__
     __asm mov eax, g_NewServerAddress
     __asm mov[edx + 0x012E90], eax
     __asm mov[edx], eax
     __asm jmp g_HairpinReturnAddress
+#endif
 }
 
-extern "C"     int(WSAAPI * Real_send)(__in SOCKET s, __in_bcount(len) const char FAR * buf, __in int len, __in int flags) = send;
-
-int WSAAPI Mine_send(__in SOCKET s, __in_bcount(len) const char FAR* buf, __in int len, __in int flags)
+extern "C"     
 {
-    const auto ret = _ReturnAddress();
+    int(WSAAPI * Real_send)( SOCKET s,  const char FAR * buf, int len,  int flags) = send;
+}
+
+int WSAAPI Mine_send( SOCKET s, const char FAR* buf, int len, int flags)
+{
+  //  const auto ret = _ReturnAddress();
     if (len == 0x98 && buf[8] == 0x26) { // always send server provided session hash in the first view socket outbound packet
         memcpy((BYTE*)(buf + 12), g_SessionHash, 16);
     }
@@ -213,6 +231,110 @@ inline LPVOID FindCharacters(void** commFuncs)
     return lpCharTable;
 }
 
+
+
+
+#ifdef __GNUC__
+static HRESULT (WINAPI* Real_CoCreateInstance)(REFCLSID, IUnknown*, DWORD, REFIID, void**) = nullptr;
+void _install_module(BYTE *head);
+
+HRESULT WINAPI Mine_CoCreateInstance(REFCLSID rclsid, IUnknown* outer, DWORD flags, REFIID riid, void **ppv)
+{
+    HRESULT hr = Real_CoCreateInstance(rclsid, outer, flags, riid, ppv);
+    if (SUCCEEDED(hr)) {
+        _install_module((BYTE*)GetModuleHandleA("polcore.dll"));
+        _install_module((BYTE*)GetModuleHandleA("polcoreE.dll"));
+        _install_module((BYTE*)GetModuleHandleA("FFXi.dll"));
+        _install_module((BYTE*)GetModuleHandleA("FFXiMain.dll"));
+    }
+    return hr;
+}
+
+void _install_func(IMAGE_THUNK_DATA *iat, DWORD hook)
+{
+    if (iat->u1.Function == hook)
+        return;
+
+    DWORD old;
+    if (VirtualProtect(&iat->u1.Function, 4, PAGE_EXECUTE_READWRITE, &old)) {
+        iat->u1.Function = hook;
+        VirtualProtect(&iat->u1.Function, 4, old, &old);
+    }
+}
+
+void _try_ws2(BYTE *head, LPCSTR dllname, IMAGE_IMPORT_DESCRIPTOR *imp)
+{
+    if (_stricmp(dllname, "Ws2_32.dll") != 0)
+        return;
+
+    IMAGE_THUNK_DATA *pint = (IMAGE_THUNK_DATA*)(head + imp->OriginalFirstThunk);
+    IMAGE_THUNK_DATA *piat = (IMAGE_THUNK_DATA*)(head + imp->FirstThunk);
+    for (; piat->u1.Function; ++piat, ++pint) {
+        if (IMAGE_SNAP_BY_ORDINAL(pint->u1.Ordinal)) {
+            DWORD id = IMAGE_ORDINAL(pint->u1.Ordinal);
+            if (id != 52)
+                continue;
+
+            _install_func(piat, (DWORD)Mine_gethostbyname);
+        }
+    }
+}
+
+void _try_ole32(BYTE *head, LPCSTR dllname, IMAGE_IMPORT_DESCRIPTOR *imp)
+{
+    if (_stricmp(dllname, "Ole32.dll") != 0)
+        return;
+
+    IMAGE_THUNK_DATA *pint = (IMAGE_THUNK_DATA*)(head + imp->OriginalFirstThunk);
+    IMAGE_THUNK_DATA *piat = (IMAGE_THUNK_DATA*)(head + imp->FirstThunk);
+    for (; piat->u1.Function; ++piat, ++pint) {
+        if (!IMAGE_SNAP_BY_ORDINAL(pint->u1.Ordinal)) {
+            LPCSTR procname = (LPCSTR) ((IMAGE_IMPORT_BY_NAME*)(head + pint->u1.AddressOfData))->Name;
+            if (_stricmp(procname, "CoCreateInstance") != 0)
+                continue;
+
+            _install_func(piat, (DWORD)Mine_CoCreateInstance);
+        }
+    }
+}
+void _install_module(BYTE *head)
+{
+    if(!head)
+        return;
+
+    IMAGE_DOS_HEADER *dos = (IMAGE_DOS_HEADER*)(head + 0);
+    IMAGE_NT_HEADERS *nt  = (IMAGE_NT_HEADERS*)(head + dos->e_lfanew);
+    IMAGE_DATA_DIRECTORY *dir = nt->OptionalHeader.DataDirectory + IMAGE_DIRECTORY_ENTRY_IMPORT;
+
+    if (!dir->VirtualAddress || !dir->Size)
+        return;
+
+    IMAGE_IMPORT_DESCRIPTOR *imp = (IMAGE_IMPORT_DESCRIPTOR*)(head + dir->VirtualAddress);
+    for (; imp->FirstThunk; ++imp) {
+        LPCSTR dllname = (LPCSTR)(head + imp->Name);
+        _try_ws2(head, dllname, imp);
+        _try_ole32(head, dllname, imp);
+    }
+}
+
+
+static void hook(void)
+{
+    HMODULE self = GetModuleHandleA(NULL);
+    HMODULE ole = GetModuleHandleA("Ole32.dll");
+    HMODULE ws2 = GetModuleHandleA("Ws2_32.dll");
+    Real_CoCreateInstance = (HRESULT(WINAPI*)(REFCLSID, IUnknown*, DWORD, REFIID, void**))GetProcAddress(ole, "CoCreateInstance");
+    Real_gethostbyname = (struct hostent*(WSAAPI*)(const char*))GetProcAddress(ws2, "gethostbyname");
+    Real_send = (int(WSAAPI*)(SOCKET s, const char FAR *buf, int len, int flags)) send;
+    _install_module((BYTE*)self);
+}
+#endif
+
+
+
+
+
+
 /**
  * @brief Main program entrypoint.
  *
@@ -221,7 +343,9 @@ inline LPVOID FindCharacters(void** commFuncs)
  *
  * @return 1 on error, 0 on success.
  */
-extern "C" EDENMAIN_API int __cdecl XiLoaderMain(int argc, char* argv[])
+//int __cdecl XiLoaderMain(int argc, char* argv[])
+//extern "C" EDENMAIN_API int __cdecl XiLoaderMain(int argc, char* argv[])
+int __cdecl main(int argc, char* argv[])
 {
     bool bUseHairpinFix = true; // always enable for now
 
@@ -267,11 +391,12 @@ extern "C" EDENMAIN_API int __cdecl XiLoaderMain(int argc, char* argv[])
         return 1;
     }
 
+#ifndef __GNUC__
     /* Attach detour for gethostbyname.. */
     DetourTransactionBegin();
     DetourUpdateThread(GetCurrentThread());
-    DetourAttach(&(PVOID&)Real_gethostbyname, Mine_gethostbyname);
-    DetourAttach(&(PVOID&)Real_send, Mine_send);
+    DetourAttach(&(PVOID&)Real_gethostbyname, &(PVOID&)Mine_gethostbyname);
+    DetourAttach(&(PVOID&)Real_send, &(PVOID&)Mine_send);
     if (DetourTransactionCommit() != NO_ERROR)
     {
         /* Cleanup COM and Winsock */
@@ -281,7 +406,9 @@ extern "C" EDENMAIN_API int __cdecl XiLoaderMain(int argc, char* argv[])
         console::output(color::error, "Failed to detour function 'gethostbyname'. Cannot continue!");
         return 1;
     }
-
+#else
+    hook();
+#endif
     /* Read Command Arguments */
     for (auto x = 1; x < argc; ++x)
     {
@@ -356,12 +483,15 @@ extern "C" EDENMAIN_API int __cdecl XiLoaderMain(int argc, char* argv[])
     ULONG ulAddress = 0;
     if (network::ResolveHostname(g_ServerAddress.c_str(), &ulAddress, argv[0]))
     {
+        printf("Resolved address as %x\n", ulAddress); 
         g_ServerAddress = inet_ntoa(*((struct in_addr*) & ulAddress));
 
         /* Attempt to create socket to server..*/
         datasocket sock;
         if (network::CreateConnection(&sock, "54231"))
         {
+            network::GetUniqueHash(& sock );
+            
             /* Attempt to verify the users account info.. */
             while (!network::VerifyAccount(&sock))
                 Sleep(10);
@@ -407,6 +537,9 @@ extern "C" EDENMAIN_API int __cdecl XiLoaderMain(int argc, char* argv[])
                 /* Locate the character storage buffer.. */
                 g_CharacterList = (char*)FindCharacters((void**)lpCommandTable);
 
+
+                printf("lpCommandTable %x\n", lpCommandTable);
+
                 /* Invoke the setup functions for polcore.. */
                 lpCommandTable[POLFUNC_REGISTRY_LANG](g_Language);
                 lpCommandTable[POLFUNC_FFXI_LANG](functions::GetRegistryPlayOnlineLanguage(g_Language));
@@ -424,10 +557,16 @@ extern "C" EDENMAIN_API int __cdecl XiLoaderMain(int argc, char* argv[])
                 {
                     /* Attempt to start Final Fantasy.. */
                     IUnknown* message = NULL;
+                    HRESULT x;
+                    
                     console::hide();
-                    ffxi->GameStart(polcore, &message);
+                    printf("Starting\n");
+                    x = ffxi->GameStart(polcore, &message);
+                    printf("Started %x\n", (unsigned int) x);
                     console::show();
-                    ffxi->Release();
+                    printf("Releasing\n");
+                    x = ffxi->Release();
+                    printf("Released %x\n", (unsigned int) x);
                 }
 
                 /* Cleanup polcore object.. */
@@ -449,14 +588,17 @@ extern "C" EDENMAIN_API int __cdecl XiLoaderMain(int argc, char* argv[])
     }
     else
     {
+        printf("FAIL\n");
         console::output(color::error, "Failed to resolve server hostname.");
     }
 
+#ifndef __GNUC__
     /* Detach detour for gethostbyname. */
     DetourTransactionBegin();
     DetourUpdateThread(GetCurrentThread());
-    DetourDetach(&(PVOID&)Real_gethostbyname, Mine_gethostbyname);
+    DetourDetach(&(PVOID&)Real_gethostbyname, &(PVOID&)Mine_gethostbyname);
     DetourTransactionCommit();
+#endif
 
     /* Cleanup COM and Winsock */
     CoUninitialize();

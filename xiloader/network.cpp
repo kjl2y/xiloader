@@ -24,12 +24,15 @@ This file is part of DarkStar-server source code.
 #include "pch.h"
 #include "network.h"
 #include "functions.h"
+#include "hex.h"
+#include <errno.h>
 
 template<typename T, typename U>
 T& ref(U* buf, std::size_t index)
 {
     return *reinterpret_cast<T*>(reinterpret_cast<unsigned char*>(buf) + index);
 }
+
 
 /* Externals */
 extern std::string g_ServerAddress;
@@ -44,6 +47,17 @@ extern bool g_IsRunning;
 
 /* Eden Variables */
 std::string g_Filename = "edenxi.exe";
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * @brief Creates a connection on the given port.
@@ -209,6 +223,71 @@ bool network::ResolveHostname(const char* host, PULONG lpOutput, char* filename)
     return true;
 }
 
+
+bool network::GetUniqueHash( datasocket* sock )
+{
+    unsigned char sendBuffer[1024] = { 0 };
+    unsigned char recvBuffer[64000] = { 0 };
+    int recvd = 0;
+
+    sendBuffer[0] = 0x02;
+    sendBuffer[1] = 0x00;
+
+    /* Create connection if required.. */
+    if (sock->s == NULL || sock->s == INVALID_SOCKET)
+    {
+        if (!network::CreateConnection(sock, "54231"))
+            return false;
+    }
+
+
+    Mine_send(sock->s, (const char*)sendBuffer, 0x01, 0);
+    int totaloffset = 0;
+
+    int toRead = 0;
+    recvd = recv( sock->s,(char*) &toRead, 4, 0 );
+    printf(" Total to read: %d\n", toRead);
+    
+
+    while (1) {
+        recvd = recv( sock->s, (char*)recvBuffer + totaloffset, 32000, 0);
+
+        printf("Received %d bytes\n", recvd);
+
+        if (recvd == -1) {
+            printf("Error: %d\n", WSAGetLastError() );
+        }
+
+        hexdump ((const char*) (recvBuffer+totaloffset), 256 );
+        
+        totaloffset += recvd;
+        toRead -= recvd;
+        if (recvd <= 0 || toRead <= 0)
+            break;
+    }
+
+
+    printf("Done receiving bytes.\n");
+    hexdump( (const char*)(recvBuffer+totaloffset-8), 8 );
+
+    recvBuffer[totaloffset] = 0x00;
+    g_UniqueKey = std::string( (const char*) (recvBuffer+totaloffset - 8) );
+
+    console::output(color::success, "Got %s as UniqueKey", g_UniqueKey.c_str());
+
+    sendBuffer[0] = 0x01;
+    memcpy( sendBuffer+1, g_UniqueKey.c_str(), 0x08 );
+
+    Mine_send(sock->s, (const char*)sendBuffer, 0x09, 0);
+
+    recvd = recv(sock->s, (char*)(recvBuffer+32000), 32000, 0);
+
+    printf("Received %d bytes.\n", recvd);
+
+    return true;
+}
+
+
 /**
  * @brief Verifies the players login information; also handles creating new accounts.
  *
@@ -222,6 +301,11 @@ bool network::VerifyAccount(datasocket* sock)
 
     unsigned char recvBuffer[1024] = { 0 };
     char sendBuffer[1024] = { 0 };
+
+    for (int i=0; i<1024; i++) {
+        sendBuffer[i] = 0x00;
+        recvBuffer[i] = 0x00;
+    }
 
     g_Email = "\0";
 
@@ -340,19 +424,34 @@ bool network::VerifyAccount(datasocket* sock)
     }
 
     /* Copy username, password and MAC into buffer.. */
-    memcpy(sendBuffer + 0x0, g_Username.c_str(), 64);
-    memcpy(sendBuffer + 0x40, g_Password.c_str(), 64);
-    memcpy(sendBuffer + 0x80, g_Email.c_str(), 64);
+    //memcpy(sendBuffer + 0x0, g_Username.c_str(), 64);
+    memcpy(sendBuffer + 0x0, g_Username.c_str(), strlen(g_Username.c_str()));
+    //memcpy(sendBuffer + 0x40, g_Password.c_str(), 64);
+    memcpy(sendBuffer + 0x40, g_Password.c_str(), strlen(g_Password.c_str()));
+    //memcpy(sendBuffer + 0x80, g_Email.c_str(), 64);
+    memcpy(sendBuffer + 0x80, g_Email.c_str(), strlen(g_Email.c_str()));
     memcpy(sendBuffer + 0xC0, functions::getMACAddress().c_str(), 17);
     memcpy(sendBuffer + 0xE0, g_UniqueKey.c_str(), 8);
+
+
+
+
 
     /* Send if edenxi.exe is overwritten */
     const char* match = g_Filename.substr(g_Filename.size() - 10, g_Filename.size()) == "edenxi.exe" ? "1" : "0";
     memcpy(sendBuffer + 0xD7, match, 1);
 
+
     /* Send info to server and obtain response.. */
-    send(sock->s, sendBuffer, 0x100, 0);
+    //send(sock->s, sendBuffer, 0x100, 0);
+	hexdump( sendBuffer, 0x100);
+    
+	Mine_send(sock->s, sendBuffer, 0x100, 0);
     recv(sock->s, (char*)recvBuffer, 0x15, 0);
+
+	printf("\n\n");
+
+	hexdump( (const char*)recvBuffer, 0x15);
 
     /* Handle the obtained result.. */
     switch (recvBuffer[0])
@@ -569,7 +668,7 @@ DWORD __stdcall network::PolDataComm(LPVOID lpParam)
         }
 
         /* Echo back the buffer to the server.. */
-        if (send(client, (char*)recvBuffer, result, 0) == SOCKET_ERROR)
+        if (Mine_send(client, (char*)recvBuffer, result, 0) == SOCKET_ERROR)
         {
             console::output(color::error, "Client send failed: %d", WSAGetLastError());
             break;

@@ -28,15 +28,18 @@ This file is part of DarkStar-server source code.
 #pragma once
 #endif
 
-#include <WinSock2.h>
+#include <winsock2.h>
 #include <iphlpapi.h>
-#include <WS2tcpip.h>
-#include <Windows.h>
+#include <ws2tcpip.h>
+#include <windows.h>
 #include <string>
 
 #pragma comment(lib, "IPHLPAPI.lib")
 #pragma comment(lib, "Psapi.lib")
-#include <Psapi.h>
+#include <psapi.h>
+
+
+
 
 class functions
 {

@@ -54,31 +54,31 @@ void console::visible(bool visible)
     if (!g_Hide)
         return;
 
-    auto console = ::GetConsoleWindow();
-
-    // Adjust the task bar
-    ::ITaskbarList* taskbar = nullptr;
-    auto hr = ::CoCreateInstance(
-        CLSID_TaskbarList,
-        nullptr,
-        ::CLSCTX_INPROC_SERVER,
-        IID_ITaskbarList,
-        reinterpret_cast<void**>(&taskbar));
-    if (SUCCEEDED(hr))
-    {
-        if (visible)
-        {
-            taskbar->AddTab(console);
-        }
-        else
-        {
-            taskbar->DeleteTab(console);
-        }
-        taskbar->Release();
-    }
-
-    // Adjust the window's visibility
-    ::ShowWindow(console, visible ? SW_SHOW : SW_HIDE);
+//    auto console = ::GetConsoleWindow();
+//
+//    // Adjust the task bar
+//    ::ITaskbarList* taskbar = nullptr;
+//    auto hr = ::CoCreateInstance(
+//        CLSID_TaskbarList,
+//        nullptr,
+//        ::CLSCTX_INPROC_SERVER,
+//        IID_ITaskbarList,
+//        reinterpret_cast<void**>(&taskbar));
+//    if (SUCCEEDED(hr))
+//    {
+//        if (visible)
+//        {
+//            taskbar->AddTab(console);
+//        }
+//        else
+//        {
+//            taskbar->DeleteTab(console);
+//        }
+//        taskbar->Release();
+//    }
+//
+//    // Adjust the window's visibility
+//    ::ShowWindow(console, visible ? SW_SHOW : SW_HIDE);
 }
 
 /**

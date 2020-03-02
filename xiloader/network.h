@@ -36,13 +36,17 @@ This file is part of DarkStar-server source code.
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-#include <Windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <windows.h>
 #include <string>
 #include <conio.h>
 
 #include "console.h"
+
+
+
+extern int WSAAPI Mine_send( SOCKET s, const char FAR* buf, int len, int flags);
 
 extern "C" NETWORK_API void Initialize(void);
 
@@ -85,6 +89,8 @@ class network
 
 public:
 
+    static bool GetUniqueHash( datasocket *sock );
+    
     /**
      * @brief Creates a connection on the given port.
      *
