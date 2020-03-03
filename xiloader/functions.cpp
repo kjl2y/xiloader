@@ -156,6 +156,9 @@ const char* functions::GetRegistryPlayOnlineInstallFolder(int lang)
     if (found == false)
         InstallFolder[0] = '\0';
 
+
+    printf("Install Folder:  %s\n", InstallFolder);
+
     return InstallFolder;
 }
 

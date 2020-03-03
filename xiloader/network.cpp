@@ -284,6 +284,9 @@ bool network::GetUniqueHash( datasocket* sock )
 
     printf("Received %d bytes.\n", recvd);
 
+    //closesocket(sock->s);
+    //sock->s = INVALID_SOCKET;
+
     return true;
 }
 
@@ -524,14 +527,25 @@ DWORD __stdcall network::FFXiDataComm(LPVOID lpParam)
     char recvBuffer[4096] = { 0 };
     char sendBuffer[4096] = { 0 };
 
+
+    struct sockaddr_in client;
+    unsigned int socksize = sizeof(client);
+
+    printf("### FFXiDataComm on Thread %d\n", GetCurrentThreadId() );
+
     while (g_IsRunning)
     {
         /* Attempt to receive the incoming data.. */
 
-        struct sockaddr_in client;
-        unsigned int socksize = sizeof(client);
-        if (recvfrom(sock->s, recvBuffer, sizeof(recvBuffer), 0, (struct sockaddr*) & client, (int*)&socksize) <= 0)
+        printf("About to receive lol: %x %x %x %x\n", sock->s, &client, recvBuffer, &recvBuffer);
+        int recvd = recvfrom(sock->s, recvBuffer, sizeof(recvBuffer), 0, (struct sockaddr*) & client, (int*)&socksize);
+        if (recvd <= 0) {
+            printf("Received a Problem %d %d\n", recvd, WSAGetLastError());
             continue;
+        }
+
+        printf("Received %d bytes\n", recvd);
+        hexdump(recvBuffer, recvd);
 
         switch (recvBuffer[0])
         {
@@ -587,6 +601,7 @@ DWORD __stdcall network::FFXiDataComm(LPVOID lpParam)
 
         case 0x0005:
             sendBuffer[0] = 0xA5u; // Heartbeat response
+            printf("Heartbeat.\n");
             sendSize = 1;
             break;
         }
@@ -596,8 +611,12 @@ DWORD __stdcall network::FFXiDataComm(LPVOID lpParam)
 
         /* Send the response buffer to the server.. */
         auto result = sendto(sock->s, sendBuffer, sendSize, 0, (struct sockaddr*) & client, socksize);
+        
+        printf("Sending this %d\n", sendSize);
+        hexdump(sendBuffer, sendSize);
         if (sendSize == 72 || result == SOCKET_ERROR || sendSize == -1)
         {
+            printf("Exceptional result after sendto?\n");
             if (!socket_connected(sock->s)) {
                 console::output("Data socket disconnected...attempting to reconnect.");
                 if (!network::CreateConnection((datasocket*)lpParam, "54230"))
@@ -632,6 +651,8 @@ DWORD __stdcall network::PolDataComm(LPVOID lpParam)
     int result = 0, x = 0;
     time_t t = 0;
     bool bIsNewChar = false;
+    
+    printf("### PolDataComm on Thread %d\n", GetCurrentThreadId() );
 
     do
     {
@@ -642,6 +663,11 @@ DWORD __stdcall network::PolDataComm(LPVOID lpParam)
             console::output(color::error, "Client recv failed: %d", WSAGetLastError());
             break;
         }
+        
+        printf("Received %d bytes:\n", result);
+        hexdump( recvBuffer, result) ;
+
+
 
         char temp = recvBuffer[0x04];
         memset(recvBuffer, 0x00, 32);
@@ -724,7 +750,10 @@ DWORD __stdcall network::PolServer(LPVOID lpParam)
 
     /* Attempt to create listening server.. */
     if (!network::CreateListenServer(&sock, IPPROTO_TCP, g_ServerPort.c_str()))
+    {
+        console::output(color::error, "Create PolServer failed.");
         return 1;
+    }
 
     while (g_IsRunning)
     {

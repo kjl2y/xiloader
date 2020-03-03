@@ -104,6 +104,7 @@ int WSAAPI Mine_send( SOCKET s, const char FAR* buf, int len, int flags)
 {
   //  const auto ret = _ReturnAddress();
     if (len == 0x98 && buf[8] == 0x26) { // always send server provided session hash in the first view socket outbound packet
+        printf("Overwriting sessionHash\n");
         memcpy((BYTE*)(buf + 12), g_SessionHash, 16);
     }
 
@@ -187,10 +188,14 @@ hostent* __stdcall Mine_gethostbyname(const char* name)
 {
     console::output(color::debug, "Resolving host: %s", name);
 
-    if (!strcmp("ffxi00.pol.com", name))
+    if (!strcmp("ffxi00.pol.com", name)) {
+        printf(" Returning %s\n", g_ServerAddress.c_str());
         return Real_gethostbyname(g_ServerAddress.c_str());
-    if (!strcmp("pp000.pol.com", name))
+    }
+    if (!strcmp("pp000.pol.com", name)) {
+        printf(" Returning 127.0.0.1");
         return Real_gethostbyname("127.0.0.1");
+    }
 
     return Real_gethostbyname(name);
 }
@@ -280,6 +285,29 @@ void _try_ws2(BYTE *head, LPCSTR dllname, IMAGE_IMPORT_DESCRIPTOR *imp)
     }
 }
 
+
+void _try_ws2_send(BYTE *head, LPCSTR dllname, IMAGE_IMPORT_DESCRIPTOR *imp)
+{
+    if (_stricmp(dllname, "Ws2_32.dll") != 0)
+        return;
+
+    IMAGE_THUNK_DATA *pint = (IMAGE_THUNK_DATA*)(head + imp->OriginalFirstThunk);
+    IMAGE_THUNK_DATA *piat = (IMAGE_THUNK_DATA*)(head + imp->FirstThunk);
+    for (; piat->u1.Function; ++piat, ++pint) {
+        if (IMAGE_SNAP_BY_ORDINAL(pint->u1.Ordinal)) {
+            DWORD id = IMAGE_ORDINAL(pint->u1.Ordinal);
+            if (id != 19)
+                continue;
+            
+            /* ordinal of "send" is at 19 */
+
+            _install_func(piat, (DWORD)Mine_send);
+        }
+    }
+}
+
+
+
 void _try_ole32(BYTE *head, LPCSTR dllname, IMAGE_IMPORT_DESCRIPTOR *imp)
 {
     if (_stricmp(dllname, "Ole32.dll") != 0)
@@ -313,6 +341,7 @@ void _install_module(BYTE *head)
     for (; imp->FirstThunk; ++imp) {
         LPCSTR dllname = (LPCSTR)(head + imp->Name);
         _try_ws2(head, dllname, imp);
+        _try_ws2_send(head, dllname, imp);
         _try_ole32(head, dllname, imp);
     }
 }
@@ -370,6 +399,8 @@ int __cdecl main(int argc, char* argv[])
     console::output(color::lightyelllow, "By connecting to Eden you agree to our terms and conditions.");
     console::output(color::lightyelllow, "Please read these on the server information section of our website.");
     console::output(color::lightred, "===========================================================================");
+
+    printf("### main on Thread %d\n", GetCurrentThreadId());
 
     /* Initialize Winsock */
     WSADATA wsaData = { 0 };
